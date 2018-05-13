@@ -20,7 +20,7 @@ By [liuzhijun](https://foofish.net/author/liuzhijun.html), 2016-05-19, 分类：
 * str
 
 容器比较容易理解，因为你就可以把它看作是一个盒子、一栋房子、一个柜子，里面可以塞任何东西。从技术角度来说，当它可以用来询问某个元素是否包含在其中时，那么这个对象就可以认为是一个容器，比如 list，set，tuples都是容器对象：
-```
+```python
 >>> assert 1 in [1, 2, 3]      # lists
 >>> assert 4 not in [1, 2, 3]
 >>> assert 1 in {1, 2, 3}      # sets
@@ -29,13 +29,13 @@ By [liuzhijun](https://foofish.net/author/liuzhijun.html), 2016-05-19, 分类：
 >>> assert 4 not in (1, 2, 3)
 ```
 询问某元素是否在dict中用dict的中key：
-```
+```python
 >>> d = {1: 'foo', 2: 'bar', 3: 'qux'}
 >>> assert 1 in d
 >>> assert 'foo' not in d  # 'foo' 不是dict中的元素
 ```
 询问某substring是否在string中：
-```
+```python
 >>> s = 'foobar'
 >>> assert 'b' in s
 >>> assert 'x' not in s
@@ -45,7 +45,7 @@ By [liuzhijun](https://foofish.net/author/liuzhijun.html), 2016-05-19, 分类：
 
 # 可迭代对象(iterable)
 刚才说过，很多容器都是可迭代对象，此外还有更多的对象同样也是可迭代对象，比如处于打开状态的files，sockets等等。但凡是可以返回一个迭代器的对象都可称之为可迭代对象，听起来可能有点困惑，没关系，先看一个例子：
-```
+```python
 >>> x = [1, 2, 3]
 >>> y = iter(x)
 >>> z = iter(x)
@@ -71,7 +71,7 @@ for elem in x:
 iterable-vs-iterator.png
 
 反编译该段代码，你可以看到解释器显示地调用GET_ITER指令，相当于调用iter(x)，FOR_ITER指令就是调用next()方法，不断地获取迭代器中的下一个元素，但是你没法直接从指令中看出来，因为他被解释器优化过了。
-
+```python
 >>> import dis
 >>> x = [1, 2, 3]
 >>> dis.dis('for _ in x: pass')
@@ -84,21 +84,23 @@ iterable-vs-iterator.png
         >>   16 POP_BLOCK
         >>   17 LOAD_CONST               0 (None)
              20 RETURN_VALUE
-迭代器(iterator)
+```
+# 迭代器(iterator)
 那么什么迭代器呢？它是一个带状态的对象，他能在你调用next()方法的时候返回容器中的下一个值，任何实现了__iter__和__next__()（python2中实现next()）方法的对象都是迭代器，__iter__返回迭代器自身，__next__返回容器中的下一个值，如果容器中没有更多元素了，则抛出StopIteration异常，至于它们到底是如何实现的这并不重要。
 
 所以，迭代器就是实现了工厂模式的对象，它在你每次你询问要下一个值的时候给你返回。有很多关于迭代器的例子，比如itertools函数返回的都是迭代器对象。
 
 生成无限序列：
-
+```python
 >>> from itertools import count
 >>> counter = count(start=13)
 >>> next(counter)
 13
 >>> next(counter)
 14
+```
 从一个有限序列中生成无限序列：
-
+```python
 >>> from itertools import cycle
 >>> colors = cycle(['red', 'white', 'blue'])
 >>> next(colors)
@@ -109,8 +111,9 @@ iterable-vs-iterator.png
 'blue'
 >>> next(colors)
 'red'
+```
 从无限的序列中生成有限序列：
-
+```python
 >>> from itertools import islice
 >>> colors = cycle(['red', 'white', 'blue'])  # infinite
 >>> limited = islice(colors, 0, 4)            # finite
@@ -120,8 +123,9 @@ red
 white
 blue
 red
+```
 为了更直观地感受迭代器内部的执行过程，我们自定义一个迭代器，以斐波那契数列为例：
-
+```python
 class Fib:
     def __init__(self):
         self.prev = 0
@@ -139,13 +143,14 @@ class Fib:
 >>> f = Fib()
 >>> list(islice(f, 0, 10))
 [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+```
 Fib既是一个可迭代对象（因为它实现了__iter__方法），又是一个迭代器（因为实现了__next__方法）。实例变量prev和curr用户维护迭代器内部的状态。每次调用next()方法的时候做两件事：
 
 为下一次调用next()方法修改状态
 为当前这次调用生成返回结果
 迭代器就像一个懒加载的工厂，等到有人需要的时候才给它生成值返回，没调用的时候就处于休眠状态等待下一次调用。
 
-生成器(generator)
+# 生成器(generator)
 生成器算得上是Python语言中最吸引人的特性之一，生成器其实是一种特殊的迭代器，不过这种迭代器更加优雅。它不需要再像上面的类一样写__iter__()和__next__()方法了，只需要一个yiled关键字。 生成器一定是迭代器（反之不成立），因此任何生成器也是以一种懒加载的模式生成值。用生成器来实现斐波那契数列的例子是：
 
 def fib():
