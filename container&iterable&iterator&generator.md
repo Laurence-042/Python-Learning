@@ -152,7 +152,7 @@ Fib既是一个可迭代对象（因为它实现了__iter__方法），又是一
 
 # 生成器(generator)
 生成器算得上是Python语言中最吸引人的特性之一，生成器其实是一种特殊的迭代器，不过这种迭代器更加优雅。它不需要再像上面的类一样写__iter__()和__next__()方法了，只需要一个yiled关键字。 生成器一定是迭代器（反之不成立），因此任何生成器也是以一种懒加载的模式生成值。用生成器来实现斐波那契数列的例子是：
-
+```python
 def fib():
     prev, curr = 0, 1
     while True:
@@ -162,28 +162,32 @@ def fib():
 >>> f = fib()
 >>> list(islice(f, 0, 10))
 [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+```
 fib就是一个普通的python函数，它特殊的地方在于函数体中没有return关键字，函数的返回值是一个生成器对象。当执行f=fib()返回的是一个生成器对象，此时函数体中的代码并不会执行，只有显示或隐示地调用next的时候才会真正执行里面的代码。
 
 生成器在Python中是一个非常强大的编程结构，可以用更少地中间变量写流式代码，此外，相比其它容器对象它更能节省内存和CPU，当然它可以用更少的代码来实现相似的功能。现在就可以动手重构你的代码了，但凡看到类似：
-
+```python
 def something():
     result = []
     for ... in ...:
         result.append(x)
     return result
+```
 都可以用生成器函数来替换：
-
+```python
 def iter_something():
     for ... in ...:
         yield x
-生成器表达式(generator expression)
+```
+# 生成器表达式(generator expression)
 生成器表达式是列表推倒式的生成器版本，看起来像列表推导式，但是它返回的是一个生成器对象而不是列表对象。
-
+```python
 >>> a = (x*x for x in range(10))
 >>> a
 <generator object <genexpr> at 0x401f08>
 >>> sum(a)
 285
+```
 总结
 容器是一系列元素的集合，str、list、set、dict、file、sockets对象都可以看作是容器，容器都可以被迭代（用在for，while等语句中），因此他们被称为可迭代对象。
 可迭代对象实现了__iter__方法，该方法返回一个迭代器对象。
