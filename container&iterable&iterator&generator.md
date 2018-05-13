@@ -1,8 +1,8 @@
 # 完全理解Python迭代对象、迭代器、生成器
-By liuzhijun, 2016-05-19, 分类： Python技术
+By [liuzhijun](https://foofish.net/author/liuzhijun.html), 2016-05-19, 分类： Python技术
 
 
-本文源自RQ作者的一篇博文，原文是Iterables vs. Iterators vs. Generators，俺写的这篇文章是按照自己的理解做的参考翻译，算不上是原文的中译版本，推荐阅读原文，谢谢网友指正。
+本文源自RQ作者的一篇博文，原文是[Iterables vs. Iterators vs. Generators](http://nvie.com/posts/iterators-vs-generators/)，俺写的这篇文章是按照自己的理解做的参考翻译，算不上是原文的中译版本，推荐阅读原文，谢谢网友指正。
 
 ![关系图](http://nvie.com/img/relationships.png)
 
@@ -10,14 +10,15 @@ By liuzhijun, 2016-05-19, 分类： Python技术
 
 
 
-容器(container)
+## 容器(container)
 容器是一种把多个元素组织在一起的数据结构，容器中的元素可以逐个地迭代获取，可以用in, not in关键字判断元素是否包含在容器中。通常这类数据结构把所有的元素存储在内存中（也有一些特例，并不是所有的元素都放在内存，比如迭代器和生成器对象）在Python中，常见的容器对象有：
 
-list, deque, ....
-set, frozensets, ....
-dict, defaultdict, OrderedDict, Counter, ....
-tuple, namedtuple, …
-str
+* list, deque, ....
+* set, frozensets, ....
+* dict, defaultdict, OrderedDict, Counter, ....
+* tuple, namedtuple, …
+* str
+
 容器比较容易理解，因为你就可以把它看作是一个盒子、一栋房子、一个柜子，里面可以塞任何东西。从技术角度来说，当它可以用来询问某个元素是否包含在其中时，那么这个对象就可以认为是一个容器，比如 list，set，tuples都是容器对象：
 ```
 >>> assert 1 in [1, 2, 3]      # lists
@@ -40,9 +41,9 @@ str
 >>> assert 'x' not in s
 >>> assert 'foo' in s 
 ```
-尽管绝大多数容器都提供了某种方式来获取其中的每一个元素，但这并不是容器本身提供的能力，而是可迭代对象赋予了容器这种能力，当然并不是所有的容器都是可迭代的，比如：Bloom filter，虽然Bloom filter可以用来检测某个元素是否包含在容器中，但是并不能从容器中获取其中的每一个值，因为Bloom filter压根就没把元素存储在容器中，而是通过一个散列函数映射成一个值保存在数组中。
+尽管绝大多数容器都提供了某种方式来获取其中的每一个元素，但这并不是容器本身提供的能力，而是**可迭代对象**赋予了容器这种能力，当然并不是所有的容器都是可迭代的，比如：[Bloom filter](http://en.wikipedia.org/wiki/Bloom_filter)，虽然Bloom filter可以用来检测某个元素是否包含在容器中，但是并不能从容器中获取其中的每一个值，因为Bloom filter压根就没把元素存储在容器中，而是通过一个散列函数映射成一个值保存在数组中。
 
-可迭代对象(iterable)
+# 可迭代对象(iterable)
 刚才说过，很多容器都是可迭代对象，此外还有更多的对象同样也是可迭代对象，比如处于打开状态的files，sockets等等。但凡是可以返回一个迭代器的对象都可称之为可迭代对象，听起来可能有点困惑，没关系，先看一个例子：
 ```
 >>> x = [1, 2, 3]
